@@ -1,6 +1,7 @@
 package com.bignerdranch.android.chapter_nine
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,17 +24,15 @@ class CrimeDetailFragment : Fragment() {
         isSolved = false
     )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+    private var _binding: FragmentCrimeDetailBinding? = null
+    val binding get() = _binding!! // Non-nullable binding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentCrimeDetailBinding.inflate(inflater, container, false)
+        _binding = FragmentCrimeDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -43,8 +42,8 @@ class CrimeDetailFragment : Fragment() {
         binding.apply {
             crimeTitle.doOnTextChanged { text, _, _, _ ->
                 crime = crime.copy(title = text.toString())
+                Log.d("CrimeDetailFragment", "Updated Crime title: ${crime.title}")
             }
-
 
             crimeDate.apply {
                 text = crime.date.toString()
@@ -53,8 +52,13 @@ class CrimeDetailFragment : Fragment() {
 
             crimeSolved.setOnCheckedChangeListener { _, isChecked ->
                 crime = crime.copy(isSolved = isChecked)
-
+                Log.d("CrimeDetailFragment", "Updated Crime isSolved: ${crime.isSolved}")
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Avoid memory leaks by nullifying the binding reference
     }
 }
